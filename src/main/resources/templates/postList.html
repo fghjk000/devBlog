@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 목록 - My Dev Blog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- 네비게이션 바 -->
+<nav class="bg-white shadow-md">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <a href="/" class="text-xl font-bold text-gray-900">My Dev Blog</a>
+
+            <!-- 메뉴 항목을 가로 정렬 -->
+            <div class="flex items-center space-x-4">
+                <a href="/posts" class="text-sm text-gray-700 hover:text-blue-600">📚 개발 게시글 목록</a>
+                <a href="/about" class="text-sm text-gray-700 hover:text-blue-600">👨‍💻 소개</a>
+                <a href="/qna" class="text-sm text-gray-700 hover:text-blue-600">📩 Q&A</a>
+
+                <!-- 관리자만 "새 게시글 작성" 버튼 보이기 -->
+                <a href="/post" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">✍️ 새 게시글</a>
+
+                <!-- 관리자만 "카테고리 관리" 버튼 보이기 -->
+                <a href="/category" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">📂 카테고리 관리</a>
+
+                <!-- 관리자만 "마이페이지" 버튼 보이기 -->
+                <a href="/admin" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">👑 관리자</a>
+
+                <!-- 로그인 / 로그아웃 버튼 -->
+                <a href="/logout" class="text-sm text-gray-700 hover:text-red-600" sec:authorize="isAuthenticated()">🚪 로그아웃</a>
+                <a href="/loginForm" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="isAnonymous()">🔑 로그인</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<!-- 게시글 목록 섹션 -->
+<section class="max-w-5xl mx-auto mt-10 px-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">📝 게시글 목록</h2>
+
+    <!-- 검색 폼 -->
+    <form th:action="@{/posts}" method="get" class="mb-6 flex space-x-2">
+        <div class="flex items-center space-x-2">
+            <!-- 검색 타입 선택 (제목, 내용) -->
+            <label for="type"></label><select name="type" id="type" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="제목" th:selected="${param.type == '제목'}">제목</option>
+            </select>
+        </div>
+
+        <div class="flex-1">
+            <!-- 검색어 입력 필드 -->
+            <input type="text" name="contents" th:value="${param.contents}" placeholder="검색어 입력"
+                   class="p-3 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                   aria-label="검색어">
+        </div>
+
+        <div class="flex items-center">
+            <!-- 검색 버튼 -->
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                검색
+            </button>
+        </div>
+    </form>
+
+    <!-- 게시글 카드 목록 -->
+    <div class="grid md:grid-cols-3 gap-6">
+        <div th:each="post : ${posts.content}" class="bg-white rounded-lg shadow-md overflow-hidden">
+            <a th:href="@{/post/{id}(id=${post.id})}">
+                <!-- 썸네일 이미지 -->
+                <img th:src="${post.imageUrl}" alt="게시글 이미지" class="w-full h-72 object-contain rounded-lg"
+                     onerror="this.onerror=null;this.src='/images/default-image.png';">
+                <div class="p-4">
+                    <!-- 제목 -->
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2" th:text="${post.title}"></h3>
+
+                    <!-- 작성자 -->
+                    <p class="text-sm text-gray-700">
+                        작성자: <span th:text="seop" class="font-medium"></span>
+                    </p>
+
+                    <!-- 생성 날짜 -->
+                    <p class="text-sm text-gray-500" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="flex justify-center items-center mt-6 space-x-2">
+        <a th:if="${posts.number > 0}"
+           th:href="@{/posts(page=${posts.number}, size=${posts.size}, type=${param.type}, contents=${param.contents})}"
+           class="px-3 py-2 border rounded bg-gray-200 hover:bg-gray-300">이전</a>
+
+        <span th:each="i : ${#numbers.sequence(1, posts.totalPages)}">
+            <a th:href="@{/posts(page=${i}, size=${posts.size}, type=${param.type}, contents=${param.contents})}"
+               th:text="${i}"
+               th:classappend="${i == posts.number + 1} ? 'bg-blue-600 text-white' : 'bg-gray-200'"
+               class="px-3 py-2 border rounded hover:bg-gray-300"></a>
+        </span>
+
+        <a th:if="${posts.number + 1 < posts.totalPages}"
+           th:href="@{/posts(page=${posts.number + 2}, size=${posts.size}, type=${param.type}, contents=${param.contents})}"
+           class="px-3 py-2 border rounded bg-gray-200 hover:bg-gray-300">다음</a>
+    </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white text-center py-6 mt-16">
+    <p class="text-sm">© 2025 My Dev Blog. All rights reserved.</p>
+    <p class="text-sm">📩 문의: <a href="mailto:fghjk000@naver.com" class="underline">fghjk000@naver.com</a></p>
+</footer>
+
+</body>
+</html>

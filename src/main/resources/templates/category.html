@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- 네비게이션 바 -->
+<nav class="bg-white shadow-md">
+    <div class="max-w-4xl mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <a href="/" class="text-xl font-bold text-gray-900">My Dev Blog</a>
+
+            <!-- 메뉴 항목을 가로 정렬 -->
+            <div class="flex items-center space-x-4">
+                <a href="/posts" class="text-sm text-gray-700 hover:text-blue-600">📚 개발 게시글 목록</a>
+                <a href="/about" class="text-sm text-gray-700 hover:text-blue-600">👨‍💻 소개</a>
+                <a href="/qna" class="text-sm text-gray-700 hover:text-blue-600">📩 Q&A</a>
+
+                <!-- 관리자만 "새 게시글 작성" 버튼 보이기 -->
+                <a href="/post" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">✍️ 새 게시글</a>
+
+                <!-- 관리자만 "카테고리 관리" 버튼 보이기 -->
+                <a href="/category" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">📂 카테고리 관리</a>
+
+                <!-- 관리자만 "마이페이지" 버튼 보이기 -->
+                <a href="/admin" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">👑 관리자</a>
+
+                <!-- 로그인 / 로그아웃 버튼 -->
+                <a href="/logout" class="text-sm text-gray-700 hover:text-red-600" sec:authorize="isAuthenticated()">🚪 로그아웃</a>
+                <a href="/loginForm" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="isAnonymous()">🔑 로그인</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- 카테고리 목록 -->
+<section class="max-w-4xl mx-auto mt-10 px-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">📂 카테고리 목록</h1>
+
+    <!-- 카테고리 목록 표시 -->
+    <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead>
+        <tr class="border-b">
+            <th class="py-2 px-4 text-left">카테고리 ID</th>
+            <th class="py-2 px-4 text-left">카테고리 이름</th>
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="category : ${categories}">
+            <tr class="border-b">
+                <td class="py-2 px-4" th:text="${category.id}"></td>
+                <td class="py-2 px-4" th:text="${category.name}"></td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+
+    <!-- 새 카테고리 추가 폼 -->
+    <h2 class="text-2xl font-semibold text-gray-800 mt-6 mb-3">새 카테고리 추가</h2>
+    <form action="/category" method="post" class="space-y-4">
+        <div>
+            <label for="categoryName" class="block text-gray-700">카테고리 이름</label>
+            <input type="text" id="categoryName" name="name" required placeholder="새 카테고리 이름"
+                   class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+        </div>
+        <button type="submit"
+                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">카테고리 추가</button>
+    </form>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white text-center py-6 mt-16">
+    <p class="text-sm">© 2025 My Dev Blog. All rights reserved.</p>
+    <p class="text-sm">📩 문의: <a href="mailto:fghjk000@naver.com" class="underline">fghjk000@naver.com</a></p>
+</footer>
+
+</body>
+</html>

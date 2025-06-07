@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dev Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- 네비게이션 바 -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <a href="/" class="text-xl font-bold text-gray-900">My Dev Blog</a>
+
+      <div class="flex items-center space-x-4">
+        <a href="/posts" class="text-sm text-gray-700 hover:text-blue-600">📚 개발 게시글 목록</a>
+        <a href="/about" class="text-sm text-gray-700 hover:text-blue-600">👨‍💻 소개</a>
+        <a href="/qna" class="text-sm text-gray-700 hover:text-blue-600">📩 Q&A</a>
+
+        <a href="/post" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">✍️ 새 게시글</a>
+        <a href="/category" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">📂 카테고리 관리</a>
+        <a href="/admin" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">👑 관리자</a>
+
+        <a href="/logout" class="text-sm text-gray-700 hover:text-red-600" sec:authorize="isAuthenticated()">🚪 로그아웃</a>
+        <a href="/loginForm" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="isAnonymous()">🔑 로그인</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="relative h-48 flex items-center justify-center text-white bg-cover bg-center"
+        style="background-image: url('https://source.unsplash.com/1600x900/?developer,workspace');">
+  <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  <div class="relative z-10 text-center p-4">
+    <h1 class="text-4xl font-bold tracking-tight">💡 개발과 기술, 그리고 나의 이야기</h1>
+    <p class="text-base text-gray-300 mt-2">개발자로 살아가는 이야기와 배운 것들을 공유합니다.</p>
+  </div>
+</header>
+
+<!-- 최신 게시글 -->
+<section class="max-w-4xl mx-auto mt-10 px-6">
+  <h2 class="text-3xl font-bold text-gray-800 mb-6">📝 최신 게시글</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div th:each="post : ${posts}" class="bg-white rounded-lg shadow-lg hover:shadow-xl transition">
+      <a th:href="@{/post/{id}(id=${post.id})}">
+        <img th:src="${post.imageUrl}" alt="게시글 이미지" class="w-full h-72 object-contain rounded-lg"
+             onerror="this.onerror=null;this.src='/images/default-image.png';">
+      </a>
+      <div class="p-6">
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">
+          <a th:href="@{/post/{id}(id=${post.id})}" th:text="${post.title}" class="hover:text-blue-600"></a>
+        </h3>
+        <p class="text-gray-500 text-sm">작성자: <span th:text="${post.author}"></span></p>
+        <p class="text-gray-500 text-sm mb-2">
+          <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+        <p class="text-gray-700 text-sm line-clamp-2" th:text="${post.content}"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 챗봇 섹션 -->
+<section class="max-w-4xl mx-auto px-6 mt-16">
+  <div class="bg-white shadow-lg rounded-lg p-6">
+    <h2 class="text-xl font-bold mb-4">🤖챗봇</h2>
+
+    <!-- 챗봇 전체 페이지 이동 -->
+    <div class="mb-4 text-right">
+      <a href="/chatbot/" class="text-sm text-blue-700 underline hover:text-blue-500">🔍 챗봇 전체 페이지로 이동</a>
+    </div>
+
+    <!-- 추천 질문 -->
+    <div th:if="${suggestions}" class="mb-4">
+      <h3 class="text-sm font-semibold mb-2">추천 질문:</h3>
+      <ul class="list-disc list-inside space-y-1">
+        <li th:each="suggestion : ${suggestions}">
+          <form method="get" action="/chatbot/">
+            <input type="hidden" name="query" th:value="${suggestion}" />
+            <button type="submit" class="text-blue-600 hover:underline" th:text="${suggestion}"></button>
+          </form>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 입력창 -->
+    <form action="/chatbot/" method="post" class="flex mt-4 space-x-2">
+      <input type="text" id="query" name="query" th:value="${query}"
+             placeholder="여기에 질문을 입력하세요..." required
+             class="flex-grow border rounded p-2">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">전송</button>
+    </form>
+  </div>
+</section>
+
+<!-- 소개 섹션 -->
+<section class="max-w-4xl mx-auto px-6 text-center py-4 mb-4 mt-20">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-3">👨‍💻 블로그 주인장 소개</h2>
+  <p class="text-base text-gray-600">안녕하세요! 저는 개발자입니다. 이 블로그에서는 제가 배운 기술과 개발 이야기, 그리고 다양한 경험을 공유하려고 합니다. 함께 성장해 나가요!</p>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white text-center py-6 mt-16">
+  <p class="text-sm">© 2025 My Dev Blog. All rights reserved.</p>
+  <p class="text-sm">📩 문의: <a href="mailto:fghjk000@naver.com" class="underline">fghjk000@naver.com</a></p>
+</footer>
+
+</body>
+</html>

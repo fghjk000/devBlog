@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Q&A 수정하기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- 네비게이션 바 -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <a href="/" class="text-xl font-bold text-gray-900">My Dev Blog</a>
+
+      <!-- 메뉴 항목을 가로 정렬 -->
+      <div class="flex items-center space-x-4">
+        <a href="/posts" class="text-sm text-gray-700 hover:text-blue-600">📚 개발 게시글 목록</a>
+        <a href="/about" class="text-sm text-gray-700 hover:text-blue-600">👨‍💻 소개</a>
+        <a href="/qna" class="text-sm text-gray-700 hover:text-blue-600">📩 Q&A</a>
+
+        <!-- 관리자만 "새 게시글 작성" 버튼 보이기 -->
+        <a href="/post" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">✍️ 새 게시글</a>
+
+        <!-- 관리자만 "카테고리 관리" 버튼 보이기 -->
+        <a href="/category" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">📂 카테고리 관리</a>
+
+        <!-- 관리자만 "마이페이지" 버튼 보이기 -->
+        <a href="/admin" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">👑 관리자</a>
+
+        <!-- 로그인 / 로그아웃 버튼 -->
+        <a href="/logout" class="text-sm text-gray-700 hover:text-red-600" sec:authorize="isAuthenticated()">🚪 로그아웃</a>
+        <a href="/loginForm" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="isAnonymous()">🔑 로그인</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Q&A 수정하기 카드 -->
+<section class="max-w-4xl mx-auto my-8 p-6 bg-white rounded-lg shadow-lg">
+  <h1 class="text-3xl font-semibold text-gray-900 mb-6">Q&A 수정하기</h1>
+
+  <form th:action="@{/qna/update/{id}(id=${qna.id})}" method="POST">
+    <!-- _method 파라미터 추가 -->
+    <input type="hidden" name="_method" value="PUT">
+
+    <!-- 제목 수정 -->
+    <div class="mb-6">
+      <label for="title" class="block text-gray-700 font-semibold mb-2">제목</label>
+      <input type="text" id="title" name="title" th:value="${qna.title}" placeholder="질문 제목을 입력하세요"
+             class="w-full p-4 rounded-lg border border-gray-300" required>
+    </div>
+
+    <!-- 질문 내용 수정 -->
+    <div class="mb-6">
+      <label for="content" class="block text-gray-700 font-semibold mb-2">내용</label>
+      <textarea id="content" name="content" placeholder="질문 내용을 입력하세요"
+                class="w-full p-4 rounded-lg border border-gray-300" rows="6" required th:text="${qna.content}"></textarea>
+    </div>
+
+    <!-- 수정 버튼 -->
+    <div class="mb-6">
+      <button type="submit" class="bg-yellow-600 text-white p-3 rounded-lg shadow-md hover:bg-yellow-700">
+        ✏️ 수정 완료
+      </button>
+    </div>
+  </form>
+
+
+  <!-- 뒤로 가기 버튼 -->
+  <div class="mt-4">
+    <a href="/qna" class="text-blue-600 hover:text-blue-800">Q&A 목록으로 돌아가기</a>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white text-center py-6 mt-16">
+  <p class="text-sm">© 2025 My Dev Blog. All rights reserved.</p>
+  <p class="text-sm">📩 문의: <a href="mailto:fghjk000@naver.com" class="underline">fghjk000@naver.com</a></p>
+</footer>
+
+</body>
+</html>

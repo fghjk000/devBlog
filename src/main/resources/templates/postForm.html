@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>새 게시글 작성 - My Dev Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-build-classic@39.0.1/build/ckeditor.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+<!-- 네비게이션 바 -->
+<nav class="bg-white shadow-md">
+  <div class="max-w-4xl mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <a href="/" class="text-xl font-bold text-gray-900">My Dev Blog</a>
+
+      <!-- 메뉴 항목을 가로 정렬 -->
+      <div class="flex items-center space-x-4">
+        <a href="/posts" class="text-sm text-gray-700 hover:text-blue-600">📚 개발 게시글 목록</a>
+        <a href="/about" class="text-sm text-gray-700 hover:text-blue-600">👨‍💻 소개</a>
+        <a href="/qna" class="text-sm text-gray-700 hover:text-blue-600">📩 Q&A</a>
+
+        <!-- 관리자만 "새 게시글 작성" 버튼 보이기 -->
+        <a href="/post" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">✍️ 새 게시글</a>
+
+        <!-- 관리자만 "카테고리 관리" 버튼 보이기 -->
+        <a href="/category" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">📂 카테고리 관리</a>
+
+        <!-- 관리자만 "마이페이지" 버튼 보이기 -->
+        <a href="/admin" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="hasRole('ADMIN')">👑 관리자</a>
+
+        <!-- 로그인 / 로그아웃 버튼 -->
+        <a href="/logout" class="text-sm text-gray-700 hover:text-red-600" sec:authorize="isAuthenticated()">🚪 로그아웃</a>
+        <a href="/loginForm" class="text-sm text-gray-700 hover:text-blue-600" sec:authorize="isAnonymous()">🔑 로그인</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero 섹션 (배경 포함) -->
+<header class="relative h-48 flex items-center justify-center text-white bg-cover bg-center"
+        style="background-image: url('https://source.unsplash.com/1600x900/?writing,notebook');">
+  <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+  <div class="relative z-10 text-center p-4">
+    <h1 class="text-4xl font-bold tracking-tight">📝 새로운 글을 작성해보세요!</h1>
+    <p class="text-base text-gray-300 mt-2">여러분의 생각과 경험을 공유하세요.</p>
+  </div>
+</header>
+
+<!-- 새 게시글 작성 페이지 -->
+<section class="max-w-4xl mx-auto px-6 mt-10">
+  <div class="bg-white p-8 rounded-lg shadow-lg">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">✍️ 새 게시글 작성</h2>
+
+    <!-- 게시글 작성 폼 -->
+    <form action="/post" method="POST" enctype="multipart/form-data">
+      <div class="mb-4">
+        <label for="title" class="block text-gray-700 text-lg font-semibold mb-2">제목</label>
+        <input type="text" id="title" name="title"
+               class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+               placeholder="제목을 입력하세요.">
+      </div>
+
+      <div class="mb-4">
+        <label for="content" class="block text-gray-700 text-lg font-semibold mb-2">내용</label>
+        <textarea id="content" name="content" rows="6"
+                  class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="내용을 입력하세요."></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="image" class="block text-gray-700 text-lg font-semibold mb-2">이미지 (선택)</label>
+        <input type="file" id="image" name="image"
+               class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+
+      <div class="flex justify-end">
+        <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition">
+          📝 게시글 작성
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="bg-gray-800 text-white text-center py-6 mt-16">
+  <p class="text-sm">© 2025 My Dev Blog. All rights reserved.</p>
+  <p class="text-sm">📩 문의: <a href="mailto:fghjk000@naver.com" class="underline">fghjk000@naver.com</a></p>
+</footer>
+
+<script>
+  let editorInstance;
+
+  ClassicEditor
+          .create(document.querySelector('#content'))
+          .then(editor => {
+            editorInstance = editor;
+          })
+          .catch(error => {
+            console.error('CKEditor 오류:', error);
+          });
+
+  // 폼 submit 시 에디터 내용을 textarea에 복사
+  const form = document.querySelector('form');
+  form.addEventListener('submit', e => {
+    // textarea에 에디터 내용을 복사
+    document.querySelector('#content').value = editorInstance.getData();
+  });
+</script>
+</body>
+</html>
