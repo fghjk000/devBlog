@@ -46,7 +46,8 @@ public class PostService {
 
     public void savePost(String title, String content, MultipartFile image) throws IOException {
         // 설정에서 경로 가져오기
-        String uploadDir = "/Users/kimhanseop/Desktop/devBlog/src/main/resources/static/uploads";
+//        String uploadDir = "/Users/kimhanseop/Desktop/devBlog/src/main/resources/static/uploads"; // 로컬 환경
+        String uploadDir = "/app/uploads";
         String imageUrl = null;
 
         if (image != null && !image.isEmpty()) {
@@ -124,12 +125,14 @@ public class PostService {
         if (image != null && !image.isEmpty()) {
             // 기존 이미지 삭제 (기존 이미지 파일을 물리적으로 삭제하는 로직 추가)
             if (imageUrl != null && !imageUrl.isEmpty()) {
-                Path oldImagePath = Paths.get("/Users/kimhanseop/Desktop/devBlog/src/main/resources/static/uploads", imageUrl);
+//                Path oldImagePath = Paths.get("/Users/kimhanseop/Desktop/devBlog/src/main/resources/static/uploads", imageUrl); // 로컬 환경
+                Path oldImagePath = Paths.get("/app/uploads", imageUrl);
                 Files.deleteIfExists(oldImagePath); // 기존 이미지 파일 삭제
             }
 
             // 새 이미지 저장
-            String uploadDir = "/Users/kimhanseop/Desktop/devBlog/src/main/resources/static/uploads";
+//            String uploadDir = "/Users/kimhanseop/Desktop/devBlog/src/main/resources/static/uploads"; // 로컬 환경
+            String uploadDir = "/app/uploads";
             String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
             Path path = Paths.get(uploadDir, fileName);
             File destination = path.toFile();
