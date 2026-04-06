@@ -36,6 +36,10 @@ public class Post {
     private List<Comment> comments;
 
     public String getImageUrl() {
-        return "/uploads/" + imageUrl; // 상대 경로에 '/uploads/'를 추가
+        return imageUrl != null ? "/uploads/" + imageUrl : null;
+    }
+
+    public String getRawImageFileName() {
+        return imageUrl;
     }
 }

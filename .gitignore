@@ -35,3 +35,25 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Sensitive files ###
+.env
+*.env
+.env.*
+
+### Database backups ###
+*.sql
+*.sql.zip
+
+### macOS ###
+.DS_Store
+**/.DS_Store
+
+### Uploads ###
+uploads/
+
+### Python cache ###
+__pycache__/
+*.pyc
+blog_chatbot/__pycache__/
+blog_chatbot/.env

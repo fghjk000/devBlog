@@ -5,6 +5,7 @@ import com.cos.devblog.board.repository.CategoryRepository;
 import com.cos.devblog.qna.entity.Qna;
 import com.cos.devblog.qna.repository.QnaRepository;
 import com.cos.devblog.user.entity.User;
+import com.cos.devblog.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,9 @@ public class QnaService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public Page<Qna> searchByTitle(String contents, Pageable pageable) {
         return qnaRepository.findByTitleContaining(contents, pageable);
@@ -75,5 +79,23 @@ public class QnaService {
 
     public void deleteQna(Long id) {
         qnaRepository.deleteById(id);
+    }
+
+    public Qna createQna(String title, String content, String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Category defaultCategory = categoryRepository.findByName("Q&A")
+                .orElseGet(() -> {
+                    Category newCategory = new Category();
+                    newCategory.setName("Q&A");
+                    return categoryRepository.save(newCategory);
+                });
+        Qna qna = new Qna();
+        qna.setTitle(title);
+        qna.setContent(content);
+        qna.setUser(user);
+        qna.setCategory(defaultCategory);
+        qna.setCreatedAt(LocalDateTime.now());
+        return qnaRepository.save(qna);
     }
 }
