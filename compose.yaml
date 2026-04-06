@@ -39,6 +39,9 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_REDIS_HOST: redis
       SPRING_REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     ports:
       - "8081:8080"
     volumes:
@@ -51,8 +54,18 @@ services:
       context: ./blog_chatbot
       dockerfile: Dockerfile
     container_name: chatbot
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: devBlog
     ports:
       - "8082:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - app_network
     command: uvicorn app:app --host 0.0.0.0 --port 8080
@@ -62,8 +75,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://blog.haruseop.com}
-        NEXT_PUBLIC_IMAGE_URL: ${NEXT_PUBLIC_IMAGE_URL:-https://blog.haruseop.com}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+        NEXT_PUBLIC_IMAGE_URL: ${NEXT_PUBLIC_IMAGE_URL:-http://localhost:3000}
     container_name: nextjs
     environment:
       INTERNAL_API_URL: http://spring-boot:8080

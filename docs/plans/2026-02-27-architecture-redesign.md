@@ -95,7 +95,7 @@ server.forward-headers-strategy=framework
 
 spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/devBlog?useSSL=false&allowPublicKeyRetrieval=true}
 spring.datasource.username=${DB_USERNAME:root}
-spring.datasource.password=${DB_PASSWORD:***REMOVED***}
+spring.datasource.password=${DB_PASSWORD:vlsksmsrnsk12!}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 spring.servlet.multipart.enabled=true
@@ -110,7 +110,7 @@ spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect
 spring.docker.compose.enabled=false
 
 # JWT
-jwt.secret=${JWT_SECRET:***REMOVED***}
+jwt.secret=${JWT_SECRET:devblog-secret-key-must-be-at-least-256-bits-long-for-hs256}
 jwt.access-token-expiration=900000
 jwt.refresh-token-expiration=604800000
 
